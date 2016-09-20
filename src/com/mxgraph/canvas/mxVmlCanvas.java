@@ -95,7 +95,7 @@ public class mxVmlCanvas extends mxBasicCanvas
 			List<mxPoint> pts = state.getAbsolutePoints();
 
 			// Transpose all points by cloning into a new array
-			pts = mxUtils.translatePoints(pts, translate.x, translate.y);
+			pts = mxUtils.translatePoints(pts, translate.getX(), translate.getY());
 
 			// Draws the line
 			elem = drawLine(pts, style);
@@ -170,8 +170,8 @@ public class mxVmlCanvas extends mxBasicCanvas
 		}
 		else
 		{
-			int x = (int) state.getX() + translate.x;
-			int y = (int) state.getY() + translate.y;
+			int x = (int) (state.getX() + translate.getX());
+			int y = (int) (state.getY() + translate.getY());
 			int w = (int) state.getWidth();
 			int h = (int) state.getHeight();
 
@@ -226,8 +226,8 @@ public class mxVmlCanvas extends mxBasicCanvas
 
 		if (drawLabels && bounds != null)
 		{
-			int x = (int) bounds.getX() + translate.x;
-			int y = (int) bounds.getY() + translate.y;
+			int x = (int) (bounds.getX() + translate.getX());
+			int y = (int) (bounds.getY() + translate.getY());
 			int w = (int) bounds.getWidth();
 			int h = (int) bounds.getHeight();
 			Map<String, Object> style = state.getStyle();
@@ -474,6 +474,8 @@ public class mxVmlCanvas extends mxBasicCanvas
 		}
 
 		float opacity = mxUtils.getFloat(style, mxConstants.STYLE_OPACITY, 100);
+		float fillOpacity = mxUtils.getFloat(style, mxConstants.STYLE_FILL_OPACITY, 100);
+		float strokeOpacity = mxUtils.getFloat(style, mxConstants.STYLE_STROKE_OPACITY, 100);
 
 		// Applies opacity to fill
 		if (fillColor != null)
@@ -481,9 +483,9 @@ public class mxVmlCanvas extends mxBasicCanvas
 			Element fill = document.createElement("v:fill");
 			fill.setAttribute("color", fillColor);
 
-			if (opacity != 100)
+			if (opacity != 100 || fillOpacity != 100)
 			{
-				fill.setAttribute("opacity", String.valueOf(opacity / 100));
+				fill.setAttribute("opacity", String.valueOf(opacity * fillOpacity / 10000));
 			}
 
 			elem.appendChild(fill);
@@ -499,9 +501,9 @@ public class mxVmlCanvas extends mxBasicCanvas
 			elem.setAttribute("strokecolor", strokeColor);
 			Element stroke = document.createElement("v:stroke");
 
-			if (opacity != 100)
+			if (opacity != 100 || strokeOpacity != 100)
 			{
-				stroke.setAttribute("opacity", String.valueOf(opacity / 100));
+				stroke.setAttribute("opacity", String.valueOf(opacity * strokeOpacity / 10000));
 			}
 
 			elem.appendChild(stroke);
